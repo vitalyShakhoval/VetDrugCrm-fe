@@ -1,183 +1,243 @@
 <script lang="ts">
-	import MenuButtonSidebar from '$lib/components/main_page/MenuButtonSidebar.svelte';
-	import MenuButtonHeader from '$lib/components/main_page/MenuButtonHeader.svelte';
-	import Search from '$lib/components/main_page/Search.svelte';
-	import LogoutButton from '$lib/components/main_page/LogoutButton.svelte';
-	import UserAvatar from '$lib/components/main_page/UserAvatar.svelte';
+    import MenuButtonSidebar from './MenuButtonSidebar.svelte';
+    import MenuButtonHeader from './MenuButtonHeader.svelte';
+    import Search from './Search.svelte';
+    import LogoutButton from './LogoutButton.svelte';
+    import UserAvatar from './UserAvatar.svelte';
+    
+    type MenuItem = {
+        id: string | number;
+        title: string;
+        icon?: string;
+        path?: string;
+        badge?: number;
+    }
+    
+    type Props = {
+        headerItems?: MenuItem[];
+        sidebarItems?: MenuItem[];
+        icon_notif?: string;
+        userAvatar?: string;
+        onMenuItemClick?: (item: MenuItem) => void;
+        onSearch?: (query: string) => void;
+        onNotificationsClick?: () => void;
+        onAvatarClick?: () => void;
+        onLogout?: () => void;
+        activeItemId?: string | number;
+        searchQuery?: string;
+        children?: any;  // Должен быть компонент Svelte
+        footerChildren?: () => any;
+    }
 
-	type Props = {
-		icon_notif?:string;
-		title1?:string;
-		title2?:string;
-		title3?:string;
-		title4?:string;
-		title5?:string;
-		icon1?:string;
-		icon2?:string;
-		icon3?:string;
-		icon4?:string;
-		icon5?:string;
-	}
+    let {
+        headerItems = [],
+        sidebarItems = [],
+        icon_notif = "src/lib/assets/Property 1=Variant2.svg",
+        userAvatar = "src/lib/assets/user_icon.svg",
+        onMenuItemClick,
+        onSearch,
+        onNotificationsClick,
+        onAvatarClick,
+        onLogout,
+        activeItemId = 1,
+        searchQuery = "",
+        children = () => null,
+        footerChildren = () => ''
+    }: Props = $props();
 
-	let {
-		icon_notif ="src/lib/assets/Property 1=Variant2.svg",
-		title1 = "Вкладка",
-		title2 = "Вкладка",
-		title3 = "Вкладка",
-		title4 = "Вкладка",
-		title5 = "Вкладка",
-		icon1 = "src/lib/assets/Property 1=Variant2.svg",
-		icon2 = "src/lib/assets/Property 1=Variant2.svg",
-		icon3 = "src/lib/assets/Property 1=Variant2.svg",
-		icon4 = "src/lib/assets/Property 1=Variant2.svg",
-		icon5 = "src/lib/assets/Property 1=Variant2.svg"
-	}: Props = $props();
+    const handleMenuItemClick = (item: MenuItem) => {
+        activeItemId = item.id;
+        if (onMenuItemClick) onMenuItemClick(item);
+    };
 
-	const headerButtons = $derived([
-		{ title: title1, id: 1 },
-		{ title: title2, id: 2 },
-		{ title: title3, id: 3 },
-		{ title: title4, id: 4 },
-		{ title: title5, id: 5 }
-	].filter(item => item.title && item.title !== "Вкладка"));
+    const handleSearch = (query: string) => {
+        if (onSearch) onSearch(query);
+    };
 
-	const sidebarButtons = $derived([
-		{ title: title1, icon: icon1, id: 1 },
-		{ title: title2, icon: icon2, id: 2 },
-		{ title: title3, icon: icon3, id: 3 },
-		{ title: title4, icon: icon4, id: 4 },
-		{ title: title5, icon: icon5, id: 5 }
-	].filter(item => item.title && item.title !== "Вкладка"));
+    const handleNotificationsClick = () => {
+        if (onNotificationsClick) onNotificationsClick();
+    };
+
+    const handleAvatarClick = () => {
+        if (onAvatarClick) onAvatarClick();
+    };
+
+    const handleLogout = () => {
+        if (onLogout) onLogout();
+    };
 </script>
 
 <section class="workspace">
-	<header class="workspace__header">
-		<section class="header__content">
-			<section class="header__menu">
-				<!-- Левая часть - ссылки -->
-				<section class="header__links">
-					{#each headerButtons as button}
-						<MenuButtonHeader title={button.title} />
-					{/each}
-				</section>
+    <header class="workspace__header">
+        <section class="header__content">
+            <section class="header__menu">
+                <section class="header__links">
+                    {#each headerItems as item}
+                        <MenuButtonHeader
+                            title={item.title}
+                            active={item.id === activeItemId}
+                            onclick={() => handleMenuItemClick(item)}
+                        />
+                    {/each}
+                </section>
 
-				<section class="user__side">
-					<img src={icon_notif} alt="" class="notifications">
-					<Search/>
-					<UserAvatar />
-				</section>
-			</section>
-		</section>
-	</header>
-	<section class="workspace__content">
-		<aside class="workspace__sidebar">
-			<section class="sidebar__menu">
-				{#each sidebarButtons as button}
-					<MenuButtonSidebar
-						title={button.title}
-						icon={button.icon} 
-					/>
-				{/each}
-			</section>
-			<LogoutButton />
-		</aside>
-		<main class="workspace__main"></main>
-	</section>
-	<footer class="workspace__footer"></footer>
+                <section class="user__side">
+                    <button 
+                        type="button" 
+                        class="notifications-btn"
+                        onclick={handleNotificationsClick}
+                    >
+                        <img src={icon_notif} alt="Уведомления" class="notifications">
+                    </button>
+                    <Search
+                        query={searchQuery}
+                        onsearch={handleSearch}
+                    />
+                    <UserAvatar
+                        icon={userAvatar}
+                        onclick={handleAvatarClick}
+                    />
+                </section>
+            </section>
+        </section>
+    </header>
+    
+    <section class="workspace__content">
+        <aside class="workspace__sidebar">
+            <section class="sidebar__menu">
+                {#each sidebarItems as item}
+                    <MenuButtonSidebar
+                        title={item.title}
+                        icon={item.icon}
+                        active={item.id === activeItemId}
+                        badge={item.badge}
+                        onclick={() => handleMenuItemClick(item)}
+                    />
+                {/each}
+            </section>
+            <LogoutButton onclick={handleLogout} />
+        </aside>
+        
+        <main class="workspace__main">
+            <!-- Ключевой момент: рендерим компонент -->
+            {#if children}
+                {@render children()}
+            {/if}
+        </main>
+    </section>
+    
+    <footer class="workspace__footer">
+        {@html footerChildren()}
+    </footer>
 </section>
 
-
 <style>
-	* {
-    margin: 0;
-    padding: 0;
-}
-.workspace {
-    margin-top: 10vh;
-    margin-left: 2.5vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.workspace__header {
-    width: 90vw;
-    height: 10vh;
-    background-color: white;
-    border-radius: 10px 10px 0px 0px;
-    box-shadow: 0px 4px 10px rgb(69 76 104/0.23);
-    display: flex;
-    align-items: center;
-}
-.workspace__content {
-    display: flex;
-    width: 90vw;
-}
-.workspace__main {
-    width: 75vw;
-    height: 60vh;
-    background-color: #FBFBFB;
-    box-shadow: inset 0 0 0 1px rgb(157 161 173/0.2);
-}
-.workspace__sidebar {
-    width: 15vw;
-    height: 60vh;
-    background-color: white;
-    box-shadow: 
+    * {
+        margin: 0;
+        padding: 0;
+				transition: 200ms ease;
+    }
+    
+    .workspace {
+        margin-top: 10vh;
+        margin-left: 2.5vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .workspace__header {
+        width: 90vw;
+        height: 10vh;
+        background-color: white;
+        border-radius: 10px 10px 0px 0px;
+        box-shadow: 0px 4px 10px rgb(69 76 104/0.23);
+        display: flex;
+        align-items: center;
+    }
+    
+    .workspace__content {
+        display: flex;
+        width: 90vw;
+    }
+    
+    .workspace__main {
+        width: 75vw;
+        min-height: 60vh;
+        background-color: #FBFBFB;
+        box-shadow: inset 0 0 0 1px rgb(157 161 173/0.2);
+        padding: 20px; /* Добавил padding для контента */
+    }
+    
+    .workspace__sidebar {
+        width: 15vw;
+        min-height: 60vh;
+        background-color: white;
+        box-shadow: 
             inset 0 0 0 1px rgb(157 161 173/0.20),
             0px 4px 10px 2px rgb(38 42 51 /0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-}
-.workspace__footer {
-    width: 90vw;
-    height: 10vh;
-    background-color: white;
-    border-radius: 0px 0px 10px 10px;
-    box-shadow: 0px 2px 10px rgb(69 76 104/0.1);
-}
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .workspace__footer {
+        width: 90vw;
+        height: 10vh;
+        background-color: white;
+        border-radius: 0px 0px 10px 10px;
+        box-shadow: 0px 2px 10px rgb(69 76 104/0.1);
+    }
 
-.sidebar__menu {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+    .sidebar__menu {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
-.header__content {
-    padding: 0 6.5vw;
-    width: 100%;
-}
+    .header__content {
+        padding: 0 6.5vw;
+        width: 100%;
+    }
 
-.header__menu {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.1vw;
-    width: 100%;
-}
+    .header__menu {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.1vw;
+        width: 100%;
+    }
 
-.header__links {
-    display: flex;
-    align-items: center;
-    gap: 0.1vw;
-}
+    .header__links {
+        display: flex;
+        align-items: center;
+        gap: 0.1vw;
+    }
 
-.user__side {
-    display: flex;
-    align-items: center;
-    gap: 2vw;
-}
+    .user__side {
+        display: flex;
+        align-items: center;
+        gap: 2vw;
+    }
 
-.notifications {
-    width: 2.5vw;
-    height: 2.5vw;
-}
+    .notifications-btn {
+        background: none;
+        border: none;
+        padding: 0.5vw;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-.notifications:hover {
-    cursor: pointer;
-    background-color: rgba(151, 151, 151, 0.1);
-    border-radius: 10px;
-}
+    .notifications {
+        width: 2.5vw;
+        height: 2.5vw;
+    }
 
+    .notifications-btn:hover {
+        background-color: rgba(151, 151, 151, 0.1);
+    }
 </style>
