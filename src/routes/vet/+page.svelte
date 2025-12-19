@@ -148,7 +148,7 @@
   <!-- ПОДВАЛ -->
   <footer class="workspace-footer-common">
     <div class="footer-content">
-      <p>© 2024 Ветеринарная система. Версия 1.0.0</p>
+      <p>© 2025 ветеринар</p>
       <p>Все права защищены</p>
     </div>
   </footer>
@@ -173,10 +173,21 @@
   }
   
   .header-links {
-    display: flex;
-    align-items: center;
-    gap: 0.1vw;
-  }
+		display: flex;
+		align-items: center;
+		gap: 3vw;          /* главное — расстояние между пунктами */
+		flex-wrap: wrap;     /* чтобы на узких экранах переносилось, а не “слипалось” */
+		overflow-x: auto;    /* если пунктов много — будет горизонтальный скролл */
+		max-width: 100%;
+		padding-bottom: 0.4vh;
+	}
+  
+	.header-btn {
+		min-width: max(9vw, 12vh);
+		height: 5vh;
+		padding: 0 1vw;
+		flex: 0 0 auto; /* не даём схлопываться */
+	}
   
   .user-side {
     display: flex;

@@ -1,243 +1,232 @@
 <script lang="ts">
-    import MenuButtonSidebar from './MenuButtonSidebar.svelte';
-    import MenuButtonHeader from './MenuButtonHeader.svelte';
-    import Search from './Search.svelte';
-    import LogoutButton from './LogoutButton.svelte';
-    import UserAvatar from './UserAvatar.svelte';
-    
-    type MenuItem = {
-        id: string | number;
-        title: string;
-        icon?: string;
-        path?: string;
-        badge?: number;
-    }
-    
-    type Props = {
-        headerItems?: MenuItem[];
-        sidebarItems?: MenuItem[];
-        icon_notif?: string;
-        userAvatar?: string;
-        onMenuItemClick?: (item: MenuItem) => void;
-        onSearch?: (query: string) => void;
-        onNotificationsClick?: () => void;
-        onAvatarClick?: () => void;
-        onLogout?: () => void;
-        activeItemId?: string | number;
-        searchQuery?: string;
-        children?: any;  // Должен быть компонент Svelte
-        footerChildren?: () => any;
-    }
+  import type { MenuItem } from '$lib/menu';
+  import type { Snippet } from 'svelte';
 
-    let {
-        headerItems = [],
-        sidebarItems = [],
-        icon_notif = "src/lib/assets/Property 1=Variant2.svg",
-        userAvatar = "src/lib/assets/user_icon.svg",
-        onMenuItemClick,
-        onSearch,
-        onNotificationsClick,
-        onAvatarClick,
-        onLogout,
-        activeItemId = 1,
-        searchQuery = "",
-        children = () => null,
-        footerChildren = () => ''
-    }: Props = $props();
+  import '$lib/workspace.css';
 
-    const handleMenuItemClick = (item: MenuItem) => {
-        activeItemId = item.id;
-        if (onMenuItemClick) onMenuItemClick(item);
-    };
+  import Search from '$lib/components/main_page/Search.svelte';
+  import LogoutButton from '$lib/components/main_page/LogoutButton.svelte';
 
-    const handleSearch = (query: string) => {
-        if (onSearch) onSearch(query);
-    };
+  type Props = {
+    headerItems: MenuItem[];
+    sidebarItems: MenuItem[];
+    activeItemId: MenuItem['id'];
+    searchQuery: string;
 
-    const handleNotificationsClick = () => {
-        if (onNotificationsClick) onNotificationsClick();
-    };
+    onMenuItemClick: (item: MenuItem) => void;
+    onSearch: (query: string) => void;
 
-    const handleAvatarClick = () => {
-        if (onAvatarClick) onAvatarClick();
-    };
+    onNotificationsClick?: () => void;
+    onAvatarClick?: () => void;
+    onLogout: () => void;
 
-    const handleLogout = () => {
-        if (onLogout) onLogout();
-    };
+    notificationsIconSrc?: string;
+    userIconSrc?: string;
+
+    /** Контент страницы */
+    children?: () => Snippet;
+
+    /** Контент футера (опционально) */
+    footerChildren?: () => Snippet;
+  };
+
+  const props = $props() as Props;
+
+  const {
+    headerItems,
+    sidebarItems,
+    activeItemId,
+    searchQuery,
+    onMenuItemClick,
+    onSearch,
+    onNotificationsClick,
+    onAvatarClick,
+    onLogout,
+    notificationsIconSrc = 'src/lib/assets/Property 1=Variant2.svg',
+    userIconSrc = 'src/lib/assets/user_icon.svg',
+    children,
+    footerChildren
+  } = props;
+
+  const handleNotifications = () => onNotificationsClick?.();
+  const handleAvatar = () => onAvatarClick?.();
 </script>
 
-<section class="workspace">
-    <header class="workspace__header">
-        <section class="header__content">
-            <section class="header__menu">
-                <section class="header__links">
-                    {#each headerItems as item}
-                        <MenuButtonHeader
-                            title={item.title}
-                            active={item.id === activeItemId}
-                            onclick={() => handleMenuItemClick(item)}
-                        />
-                    {/each}
-                </section>
+<section class="workspace-common">
+  <!-- HEADER -->
+  <header class="workspace-header-common">
+    <div class="header-inner">
+      <nav class="header-links" aria-label="Верхнее меню">
+        {#each headerItems as item (item.id)}
+          <button
+            type="button"
+            class="menu-button-common header-btn {item.id === activeItemId ? 'menu-button-active' : ''}"
+            aria-current={item.id === activeItemId ? 'page' : undefined}
+            onclick={() => onMenuItemClick(item)}
+          >
+            <span class="menu-button-text-common">{item.title}</span>
+          </button>
+        {/each}
+      </nav>
 
-                <section class="user__side">
-                    <button 
-                        type="button" 
-                        class="notifications-btn"
-                        onclick={handleNotificationsClick}
-                    >
-                        <img src={icon_notif} alt="Уведомления" class="notifications">
-                    </button>
-                    <Search
-                        query={searchQuery}
-                        onsearch={handleSearch}
-                    />
-                    <UserAvatar
-                        icon={userAvatar}
-                        onclick={handleAvatarClick}
-                    />
-                </section>
-            </section>
-        </section>
-    </header>
-    
-    <section class="workspace__content">
-        <aside class="workspace__sidebar">
-            <section class="sidebar__menu">
-                {#each sidebarItems as item}
-                    <MenuButtonSidebar
-                        title={item.title}
-                        icon={item.icon}
-                        active={item.id === activeItemId}
-                        badge={item.badge}
-                        onclick={() => handleMenuItemClick(item)}
-                    />
-                {/each}
-            </section>
-            <LogoutButton onclick={handleLogout} />
-        </aside>
-        
-        <main class="workspace__main">
-            <!-- Ключевой момент: рендерим компонент -->
-            {#if children}
-                {@render children()}
+      <div class="header-right">
+        <button
+          type="button"
+          class="notifications-btn-common"
+          aria-label="Открыть уведомления"
+          onclick={handleNotifications}
+        >
+          <img class="notifications-icon-common" src={notificationsIconSrc} alt="" />
+        </button>
+
+        <div class="search-wrap">
+          <Search query={searchQuery} onsearch={onSearch} />
+        </div>
+
+        <button
+          type="button"
+          class="user-avatar-common"
+          aria-label="Профиль"
+          onclick={handleAvatar}
+        >
+          <img class="user-icon-common" src={userIconSrc} alt="" />
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <section class="workspace-content-common">
+    <!-- SIDEBAR -->
+    <aside class="workspace-sidebar-common" aria-label="Боковое меню">
+      <div class="sidebar-menu">
+        {#each sidebarItems as item (item.id)}
+          <button
+            type="button"
+            class="menu-button-common sidebar-btn {item.id === activeItemId ? 'active' : ''}"
+            onclick={() => onMenuItemClick(item)}
+          >
+            {#if item.icon}
+              <img src={item.icon} alt="" class="sidebar-icon" />
             {/if}
-        </main>
-    </section>
-    
-    <footer class="workspace__footer">
-        {@html footerChildren()}
-    </footer>
+
+            <span class="menu-button-text-common">{item.title}</span>
+
+            {#if item.badge && item.badge > 0}
+              <span class="badge-common">{item.badge > 99 ? '99+' : item.badge}</span>
+            {/if}
+          </button>
+        {/each}
+      </div>
+
+      <div class="logout-wrap">
+        <LogoutButton onclick={onLogout} />
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="workspace-main-common">
+      <div class="workspace-main-scroll">
+        {#if children}
+          {@render children()}
+        {/if}
+      </div>
+    </main>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="workspace-footer-common">
+    {#if footerChildren}
+      {@render footerChildren()}
+    {/if}
+  </footer>
 </section>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-				transition: 200ms ease;
-    }
-    
-    .workspace {
-        margin-top: 10vh;
-        margin-left: 2.5vw;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .workspace__header {
-        width: 90vw;
-        height: 10vh;
-        background-color: white;
-        border-radius: 10px 10px 0px 0px;
-        box-shadow: 0px 4px 10px rgb(69 76 104/0.23);
-        display: flex;
-        align-items: center;
-    }
-    
-    .workspace__content {
-        display: flex;
-        width: 90vw;
-    }
-    
-    .workspace__main {
-        width: 75vw;
-        min-height: 60vh;
-        background-color: #FBFBFB;
-        box-shadow: inset 0 0 0 1px rgb(157 161 173/0.2);
-        padding: 20px; /* Добавил padding для контента */
-    }
-    
-    .workspace__sidebar {
-        width: 15vw;
-        min-height: 60vh;
-        background-color: white;
-        box-shadow: 
-            inset 0 0 0 1px rgb(157 161 173/0.20),
-            0px 4px 10px 2px rgb(38 42 51 /0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-    }
-    
-    .workspace__footer {
-        width: 90vw;
-        height: 10vh;
-        background-color: white;
-        border-radius: 0px 0px 10px 10px;
-        box-shadow: 0px 2px 10px rgb(69 76 104/0.1);
+  .header-inner {
+    width: 100%;
+    padding: 0 6.5vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1vw;
+  }
+
+  .header-links {
+    display: flex;
+    align-items: center;
+    gap: 0.8vw;
+    flex: 1 1 auto;
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: 0.4vh;
+  }
+
+  .header-btn {
+    min-width: max(9vw, 12vh);
+    height: 5vh;
+    padding: 0 1vw;
+    flex: 0 0 auto;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.2vw;
+    flex: 0 0 auto;
+  }
+
+  .search-wrap {
+    width: max(18vw, 18vh);
+  }
+
+  .sidebar-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.9vw 1vw;
+    margin: 0.25vw 0;
+    gap: 0.6vw;
+  }
+
+  .sidebar-icon {
+    width: max(1.3vw, 2.2vh);
+    height: max(1.3vw, 2.2vh);
+    flex: 0 0 auto;
+  }
+
+  .logout-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.8vw 0;
+  }
+
+  /* Узкие экраны: header становится двухрядным */
+  @media (max-width: 980px) {
+    .header-inner {
+      padding: 1vh 3.5vw;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1vh;
     }
 
-    .sidebar__menu {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+    .header-right {
+      width: 100%;
+      justify-content: flex-end;
     }
 
-    .header__content {
-        padding: 0 6.5vw;
-        width: 100%;
+    .search-wrap {
+      width: 60vw;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .header-right {
+      justify-content: space-between;
     }
 
-    .header__menu {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.1vw;
-        width: 100%;
+    .search-wrap {
+      width: 55vw;
     }
-
-    .header__links {
-        display: flex;
-        align-items: center;
-        gap: 0.1vw;
-    }
-
-    .user__side {
-        display: flex;
-        align-items: center;
-        gap: 2vw;
-    }
-
-    .notifications-btn {
-        background: none;
-        border: none;
-        padding: 0.5vw;
-        border-radius: 10px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .notifications {
-        width: 2.5vw;
-        height: 2.5vw;
-    }
-
-    .notifications-btn:hover {
-        background-color: rgba(151, 151, 151, 0.1);
-    }
+  }
 </style>

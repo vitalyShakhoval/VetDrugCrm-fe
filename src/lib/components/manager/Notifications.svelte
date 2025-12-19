@@ -51,7 +51,7 @@
       </div>
     </div>
     
-    <button on:click={saveSettings} style="background: #5B89FF; color: white; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-family: 'Montserrat', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+    <button onclick={saveSettings} style="background: #5B89FF; color: white; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-family: 'Montserrat', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
       💾 Сохранить настройки
     </button>
   </div>

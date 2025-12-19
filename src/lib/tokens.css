@@ -1,0 +1,51 @@
+/* src/lib/styles/tokens.css */
+
+/* Базовые токены (тема) */
+:root {
+  /* цвета */
+  --bg: #0b1220;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.09);
+  --border: rgba(255, 255, 255, 0.12);
+
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.65);
+  --danger: #ff4d4f;
+  --ok: #52c41a;
+
+  /* радиусы */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+
+  /* тени */
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  /* отступы (адаптивно) */
+  --s1: clamp(6px, 0.6vw, 10px);
+  --s2: clamp(10px, 1vw, 14px);
+  --s3: clamp(14px, 1.4vw, 20px);
+  --s4: clamp(18px, 2vw, 28px);
+
+  /* размеры шрифтов (адаптивно) */
+  --fs: clamp(14px, 1vw, 16px);
+  --fs-title: clamp(18px, 1.4vw, 24px);
+  --fs-h: clamp(22px, 2vw, 32px);
+
+  /* высоты контролов */
+  --control-h: clamp(40px, 3.6vh, 48px);
+}
+
+/* (опционально) тёмная/светлая тема через атрибут
+   <html data-theme="light"> */
+html[data-theme='light'] {
+  --bg: #f6f7fb;
+  --surface: rgba(0, 0, 0, 0.04);
+  --surface-2: rgba(0, 0, 0, 0.06);
+  --border: rgba(0, 0, 0, 0.10);
+
+  --text: rgba(0, 0, 0, 0.88);
+  --muted: rgba(0, 0, 0, 0.60);
+
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
+}

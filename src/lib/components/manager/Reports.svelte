@@ -38,7 +38,7 @@
         <input id="date-to" type="date" value="2024-07-26" style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
       </div>
     </div>
-    <button on:click={applyFilters} style="background: #5B89FF; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer;">
+    <button onclick={applyFilters} style="background: #5B89FF; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer;">
       Применить фильтры
     </button>
   </div>
@@ -82,10 +82,10 @@
   
   <!-- Кнопки экспорта -->
   <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-    <button on:click={exportPDF} style="background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+    <button onclick={exportPDF} style="background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
       📄 Экспорт в PDF
     </button>
-    <button on:click={exportExcel} style="background: #5B89FF; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+    <button onclick={exportExcel} style="background: #5B89FF; color: white; border: none; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
       📊 Экспорт в Excel
     </button>
   </div>
