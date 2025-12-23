@@ -2,13 +2,16 @@
 <script lang="ts">
   import Workplace from '$lib/components/authorization/Workplace.svelte';
   import { navigateTo } from '$lib/navigation';
+  import { auth } from '$lib/stores/auth';
+  import { isApiError } from '$lib/api/errors';
   
   let email = $state('');
   let password = $state('');
+  let role = $state<'manager' | 'veterinarian' | 'warehouseman'>('veterinarian');
   let isLoading = $state(false);
   let errorMessage = $state('');
   
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Базовая валидация
     if (!email || !email.trim()) {
       errorMessage = 'Введите email';
@@ -29,71 +32,34 @@
     
     isLoading = true;
     errorMessage = '';
-    
-    // Ваша логика авторизации
-    console.log('Авторизация:', { email, password });
-    
-    // Заглушка для примера - здесь будет реальный запрос к API
-    // В реальном приложении здесь будет запрос к бэкенду
-    setTimeout(() => {
-      console.log('Вход выполнен (заглушка)');
-      isLoading = false;
-      
-      // === ИМИТАЦИЯ ОТВЕТА ОТ СЕРВЕРА ===
-      // В реальном приложении роль будет приходить с бэкенда
-      // Это временная заглушка для тестирования
-      const mockApiResponse = {
-        success: true,
-        data: {
-          user: {
-            id: 1,
-            email: email,
-            role: determineMockRole(email) // Имитируем определение роли
-          }
-        }
-      };
-      
-      if (mockApiResponse.success) {
-        const userRole = mockApiResponse.data.user.role;
-        
-        // Перенаправляем в зависимости от роли
-        switch(userRole) {
-          case 'manager':
-            navigateTo.manager();
-            break;
-          case 'vet':
-            navigateTo.vet();
-            break;
-          case 'warehouse':
-            navigateTo.warehouse();
-            break;
-          default:
-            // fallback на manager
-            navigateTo.manager();
-        }
+
+    try {
+      const user = await auth.login(email, password, role);
+
+      // Перенаправляем в зависимости от роли
+      switch (user.role) {
+        case 'manager':
+          navigateTo.manager();
+          break;
+        case 'veterinarian':
+          navigateTo.vet();
+          break;
+        case 'warehouseman':
+          navigateTo.warehouse();
+          break;
+        default:
+          navigateTo.manager();
+      }
+    } catch (e) {
+      if (isApiError(e)) {
+        // Сообщение обычно приходит с бэкенда
+        errorMessage = e.message || 'Ошибка авторизации';
       } else {
         errorMessage = 'Ошибка авторизации';
       }
-    }, 1000);
-  };
-  
-  // Вспомогательная функция для имитации определения роли
-  // В реальном приложении эта логика будет на бэкенде
-  const determineMockRole = (userEmail: string): 'manager' | 'vet' | 'warehouse' => {
-    // Это временная логика для тестирования
-    // В реальном приложении роль будет приходить с бэкенда
-    const email = userEmail.toLowerCase();
-    
-    if (email.includes('vet') || email.includes('ветеринар')) {
-      return 'vet';
-    } else if (email.includes('warehouse') || email.includes('склад')) {
-      return 'warehouse';
-    } else if (email.includes('manager') || email.includes('менеджер')) {
-      return 'manager';
+    } finally {
+      isLoading = false;
     }
-    
-    // По умолчанию возвращаем менеджера
-    return 'manager';
   };
   
   const handleCreateAccountClick = () => {
@@ -106,6 +72,7 @@
     type="login"
     bind:email={email}
     bind:password={password}
+    bind:role={role}
     onLogin={handleLogin}
     onCreateAccountClick={handleCreateAccountClick}
   />

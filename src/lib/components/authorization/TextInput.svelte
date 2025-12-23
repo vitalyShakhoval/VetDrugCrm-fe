@@ -112,6 +112,7 @@
         border-radius: 1vw;
         width: 25vw;
         aspect-ratio: 20/2;
+				padding-left: 1vw;
     }
 
     .text {
@@ -124,6 +125,7 @@
     .input-container {
         position: relative;
         display: inline-block;
+				
     }
     
     .password-toggle {

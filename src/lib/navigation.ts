@@ -44,8 +44,10 @@ export const navigateTo = {
     
     // Очищаем данные авторизации
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_role');
     localStorage.removeItem('user_email');
+    localStorage.removeItem('user_id');
     
     // Перенаправляем на корневую страницу (логин)
     window.location.href = '/';

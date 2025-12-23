@@ -2,14 +2,17 @@
 <script lang="ts">
   import Workplace from '$lib/components/authorization/Workplace.svelte';
   import { navigateTo } from '$lib/navigation';
+  import { auth } from '$lib/stores/auth';
+  import { isApiError } from '$lib/api/errors';
   
   let email = $state('');
   let password = $state('');
   let confirmPassword = $state('');
+  let role = $state<'manager' | 'veterinarian' | 'warehouseman'>('veterinarian');
   let errorMessage = $state('');
   let isLoading = $state(false);
   
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
     // Сбрасываем ошибки
     errorMessage = '';
     
@@ -66,17 +69,20 @@
     }
     
     isLoading = true;
-    
-    console.log('Создание аккаунта:', { email, password });
-    
-    // Ваша логика создания аккаунта
-    // Заглушка для примера
-    setTimeout(() => {
+
+    try {
+      await auth.register(email, password, role);
+      // Бэкенд не использует email-верификацию — переходим на логин
+      navigateTo.login();
+    } catch (e) {
+      if (isApiError(e)) {
+        errorMessage = e.message || 'Ошибка регистрации';
+      } else {
+        errorMessage = 'Ошибка регистрации';
+      }
+    } finally {
       isLoading = false;
-      
-      // После успешного создания переходим на верификацию
-      navigateTo.verify(email);
-    }, 1000);
+    }
   };
 </script>
 
@@ -86,6 +92,7 @@
     bind:email={email}
     bind:password={password}
     bind:confirmPassword={confirmPassword}
+        bind:role={role}
     onCreateAccount={handleCreateAccount}
   />
   

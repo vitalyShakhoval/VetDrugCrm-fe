@@ -25,6 +25,26 @@ npm run dev
 npm run dev -- --open
 ```
 
+## Backend + Auth
+
+Проект подготовлен под подключение бэкенда через `fetch` + Bearer токен.
+
+1) Создайте `.env` (можно оттолкнуться от `.env.example`) и укажите URL API:
+
+```sh
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+2) По умолчанию ожидаются эндпоинты:
+
+- `POST /auth/login`  `{ email, password }` -> `{ accessToken, refreshToken?, user:{id?, email, role} }`
+- `POST /auth/register` `{ email, password }`
+- `POST /auth/verify` `{ email, code }` -> (как login)
+- `POST /auth/resend` `{ email }`
+- `POST /auth/refresh` `{ refreshToken }` -> `{ accessToken, refreshToken? }`
+
+Если у вас другие пути — поменяйте их в `src/lib/api/config.ts`.
+
 ## Building
 
 To create a production version of your app:

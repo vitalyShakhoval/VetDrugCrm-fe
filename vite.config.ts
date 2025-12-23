@@ -6,6 +6,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 
+	// Dev proxy to avoid CORS while backend stays unchanged
+	server: {
+		proxy: {
+			'/auth': 'http://localhost:8000',
+			'/api': 'http://localhost:8000',
+			'/admin': 'http://localhost:8000'
+		}
+	},
+
 	test: {
 		expect: { requireAssertions: true },
 

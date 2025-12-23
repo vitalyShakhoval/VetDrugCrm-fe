@@ -12,6 +12,8 @@
         confirmPassword?: string;
         // Для формы верификации
         verificationCode?: string;
+        // Роль (если бэкенд не возвращает роль при логине)
+        role?: string;
         emailAddress?: string;
         // Общие пропсы
         title?: string;
@@ -28,6 +30,7 @@
         email = $bindable(),
         password = $bindable(),
         confirmPassword = $bindable(),
+        role = $bindable('veterinarian'),
         verificationCode = $bindable(),
         emailAddress = 'example@mail.ru',
         title,
@@ -99,6 +102,16 @@
 									showPasswordToggle={true}
 									maxlength={20}
 							/>
+
+									<!-- Роль -->
+									<div class="role-field">
+										<label class="role-label">Роль</label>
+										<select class="role-select" bind:value={role}>
+											<option value="manager">Менеджер</option>
+											<option value="veterinarian">Ветеринар</option>
+											<option value="warehouseman">Кладовщик</option>
+										</select>
+									</div>
 				</section>   
 				     
         <section class="notif">
@@ -177,6 +190,16 @@
                 showPasswordToggle={true}
                 maxlength={20}
             />
+
+									<!-- Роль -->
+									<div class="role-field">
+										<label class="role-label">Роль</label>
+										<select class="role-select" bind:value={role}>
+											<option value="manager">Менеджер</option>
+											<option value="veterinarian">Ветеринар</option>
+											<option value="warehouseman">Кладовщик</option>
+										</select>
+									</div>
         </section>
         
         <section class="btns">
@@ -302,4 +325,26 @@
     .direction_left {
         text-align: center;
     }
+
+
+	.role-field{
+		display:flex;
+		flex-direction:column;
+		gap:6px;
+		margin-top:12px;
+	}
+	.role-label{
+		font-size:14px;
+		font-weight:600;
+		color:#2d2d2d;
+		font-family:'Montserrat', sans-serif;
+	}
+	.role-select{
+		padding:12px 14px;
+		border-radius:12px;
+		border:1px solid #d0d0d0;
+		font-family:'Montserrat', sans-serif;
+		font-size:14px;
+		background:white;
+	}
 </style>
