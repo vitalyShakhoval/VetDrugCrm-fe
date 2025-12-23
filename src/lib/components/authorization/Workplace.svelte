@@ -190,16 +190,6 @@
                 showPasswordToggle={true}
                 maxlength={20}
             />
-
-									<!-- Роль -->
-									<div class="role-field">
-										<label class="role-label">Роль</label>
-										<select class="role-select" bind:value={role}>
-											<option value="manager">Менеджер</option>
-											<option value="veterinarian">Ветеринар</option>
-											<option value="warehouseman">Кладовщик</option>
-										</select>
-									</div>
         </section>
         
         <section class="btns">

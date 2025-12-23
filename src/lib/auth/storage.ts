@@ -7,6 +7,11 @@ const KEY_ROLE = 'user_role';
 const KEY_EMAIL = 'user_email';
 const KEY_USER_ID = 'user_id';
 
+// Role hint storage (used to remember role chosen at registration)
+// We keep it separate from KEY_ROLE to avoid marking the user as "logged in"
+// before we actually have tokens.
+const KEY_ROLE_HINTS = 'role_hints_by_email';
+
 function safeLocalStorage(): Storage | null {
 	// SvelteKit code may run in environments without `window`
 	// (build/SSR). We guard access.
@@ -62,6 +67,45 @@ export function clearAuthStorage(): void {
 	ls.removeItem(KEY_ROLE);
 	ls.removeItem(KEY_EMAIL);
 	ls.removeItem(KEY_USER_ID);
+}
+
+type RoleHintsMap = Record<string, UserRole>;
+
+function readRoleHintsMap(): RoleHintsMap {
+	const ls = safeLocalStorage();
+	if (!ls) return {};
+	const raw = ls.getItem(KEY_ROLE_HINTS);
+	if (!raw) return {};
+	try {
+		const parsed = JSON.parse(raw) as unknown;
+		if (parsed && typeof parsed === 'object') return parsed as RoleHintsMap;
+	} catch {
+		// ignore
+	}
+	return {};
+}
+
+function writeRoleHintsMap(map: RoleHintsMap): void {
+	const ls = safeLocalStorage();
+	if (!ls) return;
+	ls.setItem(KEY_ROLE_HINTS, JSON.stringify(map));
+}
+
+export function writeRoleHint(email: string, role: UserRole): void {
+	const key = String(email || '').trim().toLowerCase();
+	if (!key) return;
+	const map = readRoleHintsMap();
+	map[key] = role;
+	writeRoleHintsMap(map);
+}
+
+export function readRoleHint(email: string): UserRole | null {
+	const key = String(email || '').trim().toLowerCase();
+	if (!key) return null;
+	const map = readRoleHintsMap();
+	const v = map[key];
+	if (v === 'manager' || v === 'veterinarian' || v === 'warehouseman') return v;
+	return null;
 }
 
 export function readAuthSnapshot(): { user: AuthUser | null; tokens: AuthTokens | null } {

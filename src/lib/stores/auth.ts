@@ -14,8 +14,8 @@ function createAuthStore() {
 
 	return {
 		subscribe,
-		login: async (email: string, password: string, role: UserRole) => {
-			const u = await authApi.login(email, password, role);
+		login: async (email: string, password: string) => {
+			const u = await authApi.login(email, password);
 			set({ user: u, isReady: true });
 			return u;
 		},

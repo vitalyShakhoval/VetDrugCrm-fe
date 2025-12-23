@@ -1,7 +1,7 @@
 import { AUTH_ENDPOINTS } from './config';
 import { apiFetch } from './client';
 import type { AuthTokens, AuthUser, UserRole } from '$lib/auth/types';
-import { writeTokens, writeUser, clearAuthStorage } from '$lib/auth/storage';
+import { writeTokens, writeUser, clearAuthStorage, readRoleHint, writeRoleHint } from '$lib/auth/storage';
 
 type JwtPairResponse = {
 	access?: string;
@@ -18,11 +18,10 @@ function assertString(v: unknown): v is string {
  *  body: { email, password }
  *  response: { access, refresh }
  *
- * NOTE: backend does not return role/user details by default,
- * so we accept `roleHint` from the UI (selected role) to keep
- * existing role-based routing working.
+ * NOTE: backend does not return role/user details by default.
+ * We remember the role chosen during registration and reuse it on login.
  */
-export async function login(email: string, password: string, roleHint: UserRole): Promise<AuthUser> {
+export async function login(email: string, password: string): Promise<AuthUser> {
 	const data = await apiFetch<JwtPairResponse>(AUTH_ENDPOINTS.login, {
 		method: 'POST',
 		json: { email, password }
@@ -35,7 +34,14 @@ export async function login(email: string, password: string, roleHint: UserRole)
 	const tokens: AuthTokens = { accessToken: data.access, refreshToken: assertString(data.refresh) ? data.refresh : undefined };
 	writeTokens(tokens);
 
-	const user: AuthUser = { email, role: roleHint };
+	const role = readRoleHint(email);
+	if (!role) {
+		// Backend does not return role in /auth/token/, so we rely on the role chosen during registration.
+		// If we don't have a stored hint for this email, we can't route correctly.
+		throw new Error('Не удалось определить роль пользователя. Зарегистрируйтесь или обратитесь к администратору.');
+	}
+
+	const user: AuthUser = { email, role };
 	writeUser(user);
 
 	return user;
@@ -52,6 +58,9 @@ export async function register(email: string, password: string, role?: UserRole)
 		method: 'POST',
 		json: role ? { email, password, role } : { email, password }
 	});
+
+	// Remember the selected role for future logins (backend token endpoint doesn't return role)
+	if (role) writeRoleHint(email, role);
 }
 
 /**

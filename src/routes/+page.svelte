@@ -7,7 +7,6 @@
   
   let email = $state('');
   let password = $state('');
-  let role = $state<'manager' | 'veterinarian' | 'warehouseman'>('veterinarian');
   let isLoading = $state(false);
   let errorMessage = $state('');
   
@@ -34,7 +33,7 @@
     errorMessage = '';
 
     try {
-      const user = await auth.login(email, password, role);
+      const user = await auth.login(email, password);
 
       // Перенаправляем в зависимости от роли
       switch (user.role) {
@@ -55,7 +54,7 @@
         // Сообщение обычно приходит с бэкенда
         errorMessage = e.message || 'Ошибка авторизации';
       } else {
-        errorMessage = 'Ошибка авторизации';
+        errorMessage = e instanceof Error ? e.message : 'Ошибка авторизации';
       }
     } finally {
       isLoading = false;
@@ -72,7 +71,6 @@
     type="login"
     bind:email={email}
     bind:password={password}
-    bind:role={role}
     onLogin={handleLogin}
     onCreateAccountClick={handleCreateAccountClick}
   />

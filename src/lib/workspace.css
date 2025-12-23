@@ -185,6 +185,70 @@
   padding: 0.1vw;
 }
 
+/*
+  Пользователь попросил убрать «кружок» у уведомлений полностью.
+  Поэтому бейдж скрываем глобально, чтобы он не мелькал ни в хедере,
+  ни в сайдбаре, ни в любых будущих местах.
+*/
+.badge-common {
+  display: none !important;
+}
+
+/*
+  Унификация базового UI внутри воркспейса:
+  - одинаковые шрифты/скругления у кнопок и инпутов
+  - одинаковые таблицы (th/td)
+  Ставим !important, чтобы перебить инлайн-стили макетов.
+*/
+.workspace-main-common,
+.workspace-sidebar-common,
+.workspace-header-common {
+  font-family: var(--font-family);
+}
+
+.workspace-main-common button {
+  font-family: var(--font-family) !important;
+  border-radius: var(--border-radius-md) !important;
+  line-height: 1.1 !important;
+}
+
+.workspace-main-common input,
+.workspace-main-common select,
+.workspace-main-common textarea {
+  font-family: var(--font-family) !important;
+  border-radius: var(--border-radius-md) !important;
+  border-color: var(--border-color) !important;
+}
+
+.workspace-main-common table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-family: var(--font-family) !important;
+}
+
+.workspace-main-common th {
+  background-color: #f9fafb !important;
+  color: #374151 !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  border-bottom: var(--line) solid var(--border-color) !important;
+}
+
+.workspace-main-common td {
+  color: #4b5563 !important;
+  border-bottom: var(--line) solid var(--border-light) !important;
+}
+
+.workspace-main-common th,
+.workspace-main-common td {
+  padding: max(0.9vh, 0.6vw) max(1vw, 1.2vh) !important;
+  font-size: var(--text-sm) !important;
+}
+
+.workspace-main-common tbody tr:hover {
+  background-color: rgba(151, 151, 151, 0.06) !important;
+}
+
 /* Аватар */
 .user-avatar-common {
   display: flex;
