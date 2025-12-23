@@ -154,16 +154,71 @@
   border-radius: 1vw;
 }
 
-/* Сайдбар активное состояние */
-.sidebar-menu .menu-button-common.active {
+/*
+  Сайдбар активное состояние.
+  Раньше селектор ожидал .sidebar-menu, но в новом WorkspaceShell
+  меню лежит внутри .workspace-sidebar-common.
+*/
+.workspace-sidebar-common .menu-button-common.active {
   background-color: var(--primary-light);
-  border-left: max(0.18vw, 0.22vh) solid var(--primary-color);
   border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
 }
 
-.sidebar-menu .menu-button-common.active .menu-button-text-common {
+.workspace-sidebar-common .menu-button-common.active .menu-button-text-common {
   color: var(--primary-color);
   font-weight: 600;
+}
+
+/* Голубенькая анимация для пунктов сайдбара (hover/active). */
+.workspace-sidebar-common .menu-button-common {
+  position: relative;
+  overflow: hidden;
+}
+
+/* мягкая подсветка, “проезжает” слева направо */
+.workspace-sidebar-common .menu-button-common::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(91, 137, 255, 0.22), rgba(91, 137, 255, 0));
+  transform: translateX(-110%);
+  transition: transform 220ms ease;
+  pointer-events: none;
+}
+
+/* индикатор слева */
+.workspace-sidebar-common .menu-button-common::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12%;
+  bottom: 12%;
+  width: max(0.18vw, 0.22vh);
+  background: var(--primary-color);
+  border-radius: 999px;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 220ms ease;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.workspace-sidebar-common .menu-button-common:hover::before {
+  transform: translateX(0);
+}
+
+.workspace-sidebar-common .menu-button-common:hover::after {
+  transform: scaleY(1);
+  opacity: 0.35;
+}
+
+.workspace-sidebar-common .menu-button-common.active::before {
+  transform: translateX(0);
+}
+
+.workspace-sidebar-common .menu-button-common.active::after {
+  transform: scaleY(1);
+  opacity: 0.85;
 }
 
 /* Бейдж */
