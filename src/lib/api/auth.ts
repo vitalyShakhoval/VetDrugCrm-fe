@@ -76,3 +76,17 @@ export async function logout(): Promise<void> {
 	// backend has no logout endpoint in this project, so we just clear local state
 	clearAuthStorage();
 }
+
+
+export type ProtectedResponse = {
+	message?: string;
+	user_id?: number;
+	username?: string;
+	is_authenticated?: boolean;
+	role?: string;
+	data?: string;
+};
+
+export async function getProtected(): Promise<ProtectedResponse> {
+	return apiFetch<ProtectedResponse>('/auth/protected/', { method: 'GET' });
+}

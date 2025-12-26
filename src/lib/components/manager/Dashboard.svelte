@@ -1,25 +1,94 @@
 <script lang="ts">
-  // Функции для кнопок (оставляем на случай если где-то еще используются)
-  const viewReports = () => {
-    console.log('Просмотреть отчеты');
-  };
-  
-  const addDrug = () => {
-    console.log('Добавить новый препарат');
-  };
-  
-  const registerDispense = () => {
-    console.log('Зарегистрировать выдачу');
-  };
-  
-  const manageSuppliers = () => {
-    console.log('Управление поставщиками');
-  };
+  import { onMount } from 'svelte';
+  import { listDrugs } from '$lib/api/drugs';
+  import { listBatches } from '$lib/api/batches';
+  import { getProtected } from '$lib/api/auth';
+
+  // старые кнопки (пока заглушки)
+  const viewReports = () => console.log('Просмотреть отчеты');
+  const addDrug = () => console.log('Добавить новый препарат');
+  const registerDispense = () => console.log('Зарегистрировать выдачу');
+  const manageSuppliers = () => console.log('Управление поставщиками');
+
+  let stats = { drugs: 0, batches: 0 };
+  let statsLoading = false;
+  let statsError: string | null = null;
+
+  let protectedLoading = false;
+  let protectedMsg: string | null = null;
+
+  onMount(async () => {
+    statsLoading = true;
+    statsError = null;
+    try {
+      const [d, b] = await Promise.all([listDrugs(), listBatches()]);
+      stats = { drugs: d.length, batches: b.length };
+    } catch (e: any) {
+      statsError = e?.message ?? 'Не удалось загрузить данные из бэкенда';
+    } finally {
+      statsLoading = false;
+    }
+  });
+
+  async function checkProtected() {
+    protectedLoading = true;
+    protectedMsg = null;
+    try {
+      const res = await getProtected();
+      protectedMsg = res?.message ? `${res.message} (role: ${res.role ?? '—'})` : JSON.stringify(res);
+    } catch (e: any) {
+      protectedMsg = e?.message ?? 'Ошибка';
+    } finally {
+      protectedLoading = false;
+    }
+  }
 </script>
+
 
 <div style="padding: 1rem; font-family: 'Montserrat', sans-serif; max-width: 100%;">
   <h1 style="margin-bottom: 0.5rem;">Панель управления</h1>
   <p style="color: #666; margin-bottom: 1.5rem;">Обзор системы и ключевые метрики</p>
+  <!-- Backend wired endpoints -->
+  <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem;">
+    <div style="display:flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: center;">
+      <div>
+        <h2 style="margin: 0 0 .25rem; font-size: 1.1rem;">Данные из бэкенда</h2>
+        <p style="margin: 0; color:#6b7280;">/api/drug/list, /api/batch/list, /auth/protected/</p>
+      </div>
+      <button
+        style="background:#5B89FF; color:white; border:0; border-radius:12px; padding:.7rem 1rem; font-weight:600; cursor:pointer;"
+        onclick={checkProtected}
+        disabled={protectedLoading}
+      >
+        {protectedLoading ? 'Проверка…' : 'Проверить protected'}
+      </button>
+    </div>
+
+    <div style="display:flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+      <div style="flex: 1; min-width: 180px; background:#fbfbfb; border:1px solid #e5e7eb; border-radius: 14px; padding: .75rem 1rem;">
+        <div style="color:#6b7280; font-weight:600;">Препаратов</div>
+        <div style="font-size: 1.6rem; font-weight: 800;">
+          {statsLoading ? '…' : stats.drugs}
+        </div>
+      </div>
+
+      <div style="flex: 1; min-width: 180px; background:#fbfbfb; border:1px solid #e5e7eb; border-radius: 14px; padding: .75rem 1rem;">
+        <div style="color:#6b7280; font-weight:600;">Партий</div>
+        <div style="font-size: 1.6rem; font-weight: 800;">
+          {statsLoading ? '…' : stats.batches}
+        </div>
+      </div>
+    </div>
+
+    {#if statsError}
+      <p style="margin: .75rem 0 0; color:#b45309;">{statsError}</p>
+    {/if}
+
+    {#if protectedMsg}
+      <p style="margin: .75rem 0 0; color:#1f2937;">{protectedMsg}</p>
+    {/if}
+  </div>
+
   
   <!-- Карточки с метриками -->
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">

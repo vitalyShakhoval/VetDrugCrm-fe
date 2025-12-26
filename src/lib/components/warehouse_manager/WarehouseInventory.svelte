@@ -15,7 +15,6 @@
   <header class="head">
     <div>
       <h1 class="section-title">Инвентаризация</h1>
-      <p class="muted">Сверка остатков (макет) — таблица скроллится и не ломает вёрстку</p>
     </div>
     <button class="btn" onclick={save}>Сохранить</button>
   </header>

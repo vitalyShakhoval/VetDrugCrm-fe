@@ -24,7 +24,7 @@
   <header class="top">
     <div>
       <h1 class="section-title">Панель склада</h1>
-      <p class="muted">Сводка по складу в макетном режиме (готово для “ручек” бэкенда)</p>
+
     </div>
 
     <div class="actions">

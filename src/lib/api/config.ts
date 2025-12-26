@@ -17,3 +17,15 @@ export const AUTH_ENDPOINTS = {
 	register: '/auth/register/',
 	refresh: '/auth/token/refresh/'
 } as const;
+
+
+/** DRF endpoints for drugs & batches */
+export const DRUG_ENDPOINTS = {
+	list: '/api/drug/list',
+	item: (id: number) => `/api/drug/item/${id}`
+} as const;
+
+export const BATCH_ENDPOINTS = {
+	list: '/api/batch/list',
+	item: (id: number) => `/api/batch/item/${id}`
+} as const;
